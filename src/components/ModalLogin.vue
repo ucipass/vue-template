@@ -1,7 +1,6 @@
 <template>
   <div>
-    <h1>{{ msg }}</h1>
-    <b-modal id="modal-1" class="text-center" title="Login">
+    <b-modal :id="id" class="text-center" :title="title">
         <b-container>
           <b-row class="my-1">
             <b-col sm="3">
@@ -22,18 +21,24 @@
         </b-container>
         <div slot="modal-footer" class="w-100">
           <p class="float-left"></p>
-          <b-button variant="primary" size="sm" class="float-right" @click="hidemod">Login</b-button>
+          <b-button variant="primary" size="sm" class="float-right" @click="login">Login</b-button>
         </div>
     </b-modal>
   </div>
 </template>
 
 <script>
-
 export default {
-  name: 'Modal',
+  name: 'ModalLogin',
   props: {
-    msg: String
+    title: {
+      default: "Login",
+      type: String
+    },
+    id: {
+      default: "ModalLoginId",
+      type: String
+    }
   },
   data: function(){
     return{
@@ -42,22 +47,20 @@ export default {
     }
   },
   methods:{
-    showmod: function(){
-      this.$bvModal.show('modal-1')
+    show: function(){
+      this.$bvModal.show(this.id)
     },
-    hidemod: function(){
-      this.$bvModal.hide('modal-1')
+    hide: function(){
+      this.$bvModal.hide(this.id)
     },
     login: function(){
-      // eslint-disable-next-line 
-      console.log('username',this.username,'password',this.password)
+      this.$emit('loginEvent', {username: this.username, password: this.password} )
     }
   },
   mounted: function () {
-    this.$nextTick(() => {
-      this.$bvModal.show('modal-1')
-    })
-    
+    // this.$nextTick(() => {
+    //   this.$bvModal.show('modal-1')
+    // })
   }
 }
 </script>
