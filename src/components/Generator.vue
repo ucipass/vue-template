@@ -103,13 +103,11 @@ export default {
             for( let i = 0 ; i< array.length; i++){
                 let json = array[i]
                 let template = this.template
-                console.log("START")
                 let result = template
                 for( let col in json){
                     let reg = new RegExp("\<"+col+"\>")
                     result = result.replace(reg,json[col])
                 }
-                console.log(result)
                 newresult.push({result: result})
             }
             this.results = newresult
