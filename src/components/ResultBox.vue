@@ -4,7 +4,7 @@
     <b-row >
         <b-form-textarea
         :value="message"
-        placeholder="Auto height textarea"
+        placeholder="Result of template and CSV row"
         rows="5"
         max-rows="20"
         ></b-form-textarea>
@@ -18,7 +18,7 @@ export default {
   name: 'ResultBox',
   props: {
     message: {
-      default: "Empty",
+      default: "No result...",
       type: String
     }
   },

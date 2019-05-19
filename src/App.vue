@@ -3,7 +3,7 @@
     <div>
       <b-jumbotron 
         v-if="seen"
-        header="File Generator"
+        header="CSV Templater"
         lead="Generate text files by combining rows from a CSV file with a template">
         <b-button 
           variant="primary"
@@ -30,7 +30,7 @@ export default {
   components: {
     ModalLogin,Generator,NavBarMain
   },
-  data: function(){ return {seen: false}},
+  data: function(){ return {seen: true}},
   methods: {
     login: function(value){
       console.log("Main", value)

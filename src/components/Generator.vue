@@ -1,11 +1,17 @@
 <template>
 <b-container fluid>
-    <b-row align-h="between" class="m-1">
+    <b-row class="m-1">
+        <b-col class="p-0">
             <b-form-file
+                @change="loadFileCSV"
                 v-model="filecsv"
                 placeholder="CSV file..."
                 drop-placeholder="Drop file here..."
-            ></b-form-file>
+            ></b-form-file>            
+        </b-col>
+        <b-col class="p-0" cols="1">
+            <b-button class="float-left" @click="filecsv=null">reset</b-button>
+        </b-col>
     </b-row>
     <b-row class="m-1">
         <b-form-textarea
@@ -18,11 +24,18 @@
         ></b-form-textarea>
     </b-row>
     <b-row class="m-1">
-        <b-form-file
+        <b-col class="p-0">
+            <b-form-file
+            @change="loadFileTemplate"
             v-model="filetmp"
             placeholder="Template file..."
             drop-placeholder="Drop file here..."
-        ></b-form-file>
+            ></b-form-file>
+        </b-col>
+        <b-col class="p-0" cols="1">
+            <b-button class="float-left" @click="filetmp=null">reset</b-button>
+        </b-col>
+
     </b-row>
     <b-row class="m-1">
         <b-form-textarea
@@ -35,8 +48,8 @@
         ></b-form-textarea>
     </b-row>  
     <b-row class="m-1">
-        <result-box 
-            :message=results[currentPage-1].result
+        <result-box
+            :message="results[currentPage-1].result"
         ></result-box>    
         <div class="overflow-auto"> 
             <!-- Use text in props -->
@@ -55,6 +68,7 @@
             <b-dropdown-item @click="saveFile('template.csv', csvtext)">Save CSV table</b-dropdown-item>
             <b-dropdown-item @click="saveFile('template.txt', template)">Save template</b-dropdown-item>
             <b-dropdown-item @click="saveZipFiles('results.zip', results)">Save results in ZIP</b-dropdown-item>
+            <b-dropdown-item @click="saveMrgFiles('merged.txt', results)">Save results merged</b-dropdown-item>
             <b-dropdown-divider v-if="false"></b-dropdown-divider>
             <b-dropdown-item v-if="false">Save all in ZIP</b-dropdown-item>
         </b-dropdown>  
@@ -84,7 +98,7 @@ export default {
       username: 'myuser',
       password: 'mypass',
       csvtext: "name,index,ip,mask\nR1,1/1,1.1.1.1,255.255.255.0\nR2,1/2,1.1.2.1,255.255.255.0\nR3,1/3,1.1.3.1,255.255.255.0",
-      template: "interface Ethernet<index>\n desciption <name>\n ip address <ip> <mask>",
+      template: "interface Ethernet<index>\n desciption <name>\n ip address <ip> <mask> \n",
       filecsv: "",
       filetmp: "",
       rows: 1,
@@ -106,7 +120,15 @@ export default {
         return csvj().fromString(this.csvtext)
         .then((array)=>{
             let newresult = []
-            this.rows = array.length
+            if (array.length){
+                this.rows = array.length
+            }else{
+                this.results = [{results: ""}]
+                this.rows= 1
+                this.currentPage= 1
+                this.perPage= 1
+                return false;
+            }
             for( let i = 0 ; i< array.length; i++){
                 let json = array[i]
                 let template = this.template
@@ -153,6 +175,35 @@ export default {
         .then(function (blob) {
             saveAs(blob, filename);
         });
+    },
+    saveMrgFiles: function(filename,array) {
+        let mergedText = ""
+        for(let i = 0; i<array.length; i++){
+            let file = array[i]
+            mergedText +=file.result
+        }
+        this.saveFile(filename,mergedText)
+    },
+    loadFileTemplate: function(event) {
+        var input = event.target;
+        var reader = new FileReader();
+        let _this = this
+        reader.onload = function(){
+            _this.template = reader.result
+            _this.computeResults()
+        };
+        reader.readAsBinaryString(input.files[0]);
+    },
+    loadFileCSV: function(event) {
+        var input = event.target;
+        var reader = new FileReader();
+        let _this = this
+        reader.onload = function(){
+            _this.csvtext = reader.result
+            _this.computeResults()
+        };
+        reader.readAsBinaryString(input.files[0]);
+
     }
   },
   mounted: function () {
